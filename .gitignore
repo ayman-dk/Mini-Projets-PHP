@@ -1,0 +1,14 @@
+# --- Dossiers système et IDE ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Sécurité : Fichiers de configuration ---
+# On ignore les fichiers qui contiennent des mots de passe
+config.php
+.env
+
+# --- Fichiers temporaires ---
+*.log
+*.tmp
