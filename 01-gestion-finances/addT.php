@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':tt' => $trans
         ]);
 
-        echo "<p style='color: green;'>Transaction ajoutée avec succès !</p>";
+        header("Location: index.php");
     } catch (PDOException $e) {
         echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
     }

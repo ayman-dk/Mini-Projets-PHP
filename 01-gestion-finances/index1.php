@@ -1,1 +1,0 @@
-<?php echo "Bienvenue dans mon gestionnaire de finances !"; ?>
