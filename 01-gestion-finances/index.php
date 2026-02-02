@@ -21,19 +21,65 @@
         $totalRevenus += $t['montant'];
     } else {
         $totalDepenses += $t['montant'];
-    }}
-    $solde = $totalRevenus - $totalDepenses;
-    ?>
+        }}
+        $solde = $totalRevenus - $totalDepenses;
+        ?>
+    <?php include 'header.php'; ?>
 
-<div class="stats">
-    <p>Revenus : <span style="color: green"><?= $totalRevenus ?> MAD</span></p>
-    <p>Dépenses : <span style="color: red"><?= $totalDepenses ?> MAD</span></p>
-    <hr>
-    <h2>Solde : <?= $solde ?> MAD</h2>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-start border-success border-4 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-success fw-bold text-uppercase small">Total Revenus</div>
+                        <div class="h4 mb-0 fw-bold"><?= number_format($totalRevenus, 2, ',', ' ') ?> MAD</div>
+                    </div>
+                    <i class="fa-solid fa-wallet fa-2x text-gray-300 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-start border-danger border-4 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-danger fw-bold text-uppercase small">Total Dépenses</div>
+                        <div class="h4 mb-0 fw-bold"><?= number_format($totalDepenses, 2, ',', ' ') ?> MAD</div>
+                    </div>
+                    <i class="fa-solid fa-cart-shopping fa-2x text-gray-300 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-start border-primary border-4 shadow-sm bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-uppercase small fw-bold">Solde Actuel</div>
+                        <div class="h4 mb-0 fw-bold"><?= number_format($solde, 2, ',', ' ') ?> MAD</div>
+                    </div>
+                    <i class="fa-solid fa-scale-balanced fa-2x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-    <table border="1">
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Liste des Transactions</h2>
+<a href="addT.php" class="btn btn-success" title="Ajouter"><i class="fa-solid fa-plus"></i> Ajouter</a>
+</div>
+<div class="card shadow-sm">
+  <div class="card-body">
+        <table class="table table-hover">
+        <thead class="table-light">
         <tr>
-            <th>ID</th>
             <th>Titre</th>
             <th>Montant</th>
             <th>Description</th>
@@ -42,21 +88,55 @@
             <th>Type de transaction</th>
             <th>Actions</th>
         </tr>
-        <?php foreach ($transactions as $trans): ?>
-        <tr>
-            <td><?php echo htmlspecialchars($trans['id']); ?></td>
-            <td><?php echo htmlspecialchars($trans['titre']); ?></td>
-            <td><?php echo htmlspecialchars($trans['montant']); ?></td>
-            <td><?php echo htmlspecialchars($trans['description']); ?></td>
-            <td><?php echo htmlspecialchars($trans['categorie']); ?></td>
-            <td><?php echo htmlspecialchars($trans['date_operation']); ?></td>
-            <td style="color: <?= $trans['type_transaction'] === 'revenu' ? 'green' : 'red' ?>;"><?php echo htmlspecialchars($trans['type_transaction']); ?></td>
-            <td>
-                <a href="editT.php?id=<?php echo $trans['id']; ?>">Modifier</a> | 
-                <a href="deleteT.php?id=<?php echo $trans['id']; ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?');">Supprimer</a>
-        </tr>
-        <?php endforeach; ?>
+        </thead>
+        <tbody>
+    <?php foreach ($transactions as $trans): ?>
+    <tr class="align-middle">
+        <td class="fw-bold"><?= htmlspecialchars($trans['titre']) ?></td>
+        
+        <td class="fw-bold <?= $trans['type_transaction'] === 'depense' ? 'text-danger' : 'text-success' ?>">
+            <?= $trans['type_transaction'] === 'depense' ? '-' : '+' ?> 
+            <?= number_format($trans['montant'], 2, ',', ' ') ?> DH
+        </td>
+        
+        <td class="text-muted small"><?= htmlspecialchars($trans['description']) ?></td>
+        
+        <td>
+            <span class="badge rounded-pill bg-secondary text-light">
+                <?= htmlspecialchars($trans['categorie']) ?>
+            </span>
+        </td>
+        
+        <td><?= date('d/m/Y', strtotime($trans['date_operation'])) ?></td>
+        
+        <td>
+            <?php if ($trans['type_transaction'] === 'depense'): ?>
+                <span class="text-danger"><i class="bi bi-arrow-down-circle-fill text-danger"></i> Sortie</span>
+            <?php else: ?>
+                <span class="text-success"><i class="bi bi-arrow-up-circle-fill text-success"></i> Entrée</span>
+            <?php endif; ?>
+        </td>
+        
+        <td>
+    <div class="btn-group" role="group">
+        <a href="editT.php?id=<?= $trans['id'] ?>" class="btn btn-sm btn-outline-primary" title="Modifier">
+            <i class="bi bi-pencil-square"></i>
+        </a>
+        
+        <a href="deleteT.php?id=<?= $trans['id'] ?>" 
+           class="btn btn-sm btn-outline-danger" 
+           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?');"
+           title="Supprimer">
+            <i class="bi bi-trash"></i>
+        </a>
+    </div>
+</td>
+    </tr>
+    <?php endforeach; ?>
+</tbody>
     </table>
-    <a href="addT.php">Ajouter une transaction</a>
+</div>
+</div>
+<?php include 'footer.php'; ?>
 </body>
 </html>

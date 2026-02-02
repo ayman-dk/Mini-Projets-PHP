@@ -6,36 +6,76 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="" method="POST">
-        <label for="titre">Titre:</label>
-        <input type="text" id="titre" name="title" required>
-        <br>
-        <label for="montant">Montant:</label>
-        <input type="number" id="montant" step="0.01" name="amount" required>
-        <br>
-        <label for="descr">Description:</label>
-        <textarea  id="descr" name="description"></textarea>
-        <br>
-        <label for="cat">Catégorie:</label>
-        <select id="cat" name="category">
-            <option value="salaire">Salaire</option>
-            <option value="nourriture">Nourriture</option>
-            <option value="loyer">Loyer</option>
-            <option value="divertissement">Divertissement</option>
-            <option value="autre">Autre</option>
-        </select>
-        <br>
-        <label for="dateO">Date d'opération:</label>
-        <input type="date" id="dateO" name="dateO">
-        <br>
-        <label for="trans">Type de transaction:</label>
-        <select id="trans" name="trans" required>
-            <option value="revenu">Revenus</option>
-            <option value="depense">Dépenses</option>
-        </select>
-        <br>
-        <input type="submit" value="Ajouter">
-    </form>
+    <?php include 'header.php'; ?>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fa-solid fa-plus-circle"></i> Ajouter une transaction</h4>
+            </div>
+            <div class="card-body">
+                <form action="" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Titre *</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-pen"></i></span>
+                            <input type="text" name="title" class="form-control" placeholder="Ex: Salaire, Loyer..." required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Montant (MAD) *</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-money-bill"></i></span>
+                            <input type="number" step="0.01" name="amount" class="form-control" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-sticky-note"></i></span>
+                            <input type="text" name="description" class="form-control" placeholder="Description de la transaction...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Catégorie</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                            <input type="text" name="category" class="form-control" placeholder="Ex: Alimentation, Transport...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Date d'opération</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                            <input type="date" name="dateO" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Type de transaction *</label>
+                        <select name="trans" class="form-select" required>
+                            <option value="revenu">Revenu (Entrée)</option>
+                            <option value="depense">Dépense (Sortie)</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-check"></i> Enregistrer la transaction</button>
+                        <a href="index.php" class="btn btn-light border">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>
 
     <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
