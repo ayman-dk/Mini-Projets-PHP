@@ -6,10 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    </div> <footer class="footer mt-auto py-4 bg-white border-top">
+    </div> <footer class="footer mt-auto py-4">
     <div class="container text-center">
-        <span class="text-muted small">
-            &copy; <?= date('Y') ?> <strong>Gestionnaire de Finances</strong> - Réalisé par <a href="https://www.linkedin.com/in/ayman-daki-79a40331a" target="_blank">Ayman Daki</a>
+        <span class="text-white small">
+            &copy; <?= date('Y') ?> <strong>Gestionnaire de Finances</strong> - Réalisé par <a href="https://www.linkedin.com/in/ayman-daki-79a40331a" target="_blank" class="text-white">Ayman Daki</a>
         </span>
     </div>
 </footer>

@@ -56,11 +56,142 @@
 
     <?php include 'header.php'; ?>
 
-<div class="row justify-content-center">
+<style>
+    .form-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        border: none;
+        overflow: hidden;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-card .card-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+        color: white;
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    .form-card .card-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-group-text {
+        background: var(--light-bg);
+        border-color: #e2e8f0;
+        color: var(--primary-color);
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-light {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-light:hover {
+        background: #f8f9fa;
+        transform: translateY(-1px);
+    }
+
+    .input-group {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .illustration {
+        animation: bounceIn 1s ease-out;
+    }
+
+    @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<div class="row justify-content-center py-5 align-items-center">
     <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modifier la transaction</h4>
+        <div class="text-center mb-4">
+            <div class="illustration">
+                <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="80" fill="url(#gradient1)" opacity="0.1"/>
+                    <circle cx="100" cy="100" r="60" fill="url(#gradient2)" opacity="0.2"/>
+                    <path d="M70 90 L85 105 L115 75" stroke="var(--primary-color)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M85 105 L100 120 L130 90" stroke="var(--primary-color)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="100" cy="100" r="8" fill="var(--primary-color)"/>
+                    <defs>
+                        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--primary-color);stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:var(--success-color);stop-opacity:0.1" />
+                        </linearGradient>
+                        <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:var(--success-color);stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h3 class="mt-3 text-primary">Modifiez votre transaction</h3>
+            <p class="text-muted">Apportez les changements nécessaires aux détails de votre transaction.</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card form-card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i> Modifier la transaction</h4>
             </div>
             <div class="card-body">
                 <form action="" method="POST">
@@ -122,10 +253,13 @@
                         </select>
                     </div>
 
-                    <div class="d-grid gap-2">
+                    <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-check"></i> Enregistrer les modifications</button>
-                        <a href="index.php" class="btn btn-light border">Annuler</a>
+                            <i class="fa-solid fa-check me-2"></i> Enregistrer les modifications
+                        </button>
+                        <a href="index.php" class="btn btn-light">
+                            <i class="fa-solid fa-times me-2"></i> Annuler
+                        </a>
                     </div>
                 </form>
             </div>

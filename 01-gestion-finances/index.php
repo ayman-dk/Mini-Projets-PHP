@@ -8,10 +8,26 @@
 
     require 'db.php';
     $current_user_id = $_SESSION['user_id'];
+    $search = $_GET['search'] ?? '';
+    $use_date_filter = empty($search);
+    $date_debut = $_GET['date_debut'] ?? (!empty($search) ? '2020-01-01' : date('Y-m-01'));
+    $date_fin = $_GET['date_fin'] ?? (!empty($search) ? date('Y-m-d') : date('Y-m-t'));
 
-    $sql = "SELECT * FROM transactions WHERE user_id = :uid ORDER BY date_operation DESC";
+    $sql = "SELECT * FROM transactions WHERE user_id = :uid";
+    if ($use_date_filter) {
+        $sql .= " AND date_operation BETWEEN :date_debut AND :date_fin";
+    }
+    $sql .= " AND (titre LIKE :search OR description LIKE :search OR categorie LIKE :search) ORDER BY date_operation DESC";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':uid' => $current_user_id]);
+    $params = [
+        ':uid' => $current_user_id,
+        ':search' => "%$search%"
+    ];
+    if ($use_date_filter) {
+        $params[':date_debut'] = $date_debut;
+        $params[':date_fin'] = $date_fin;
+    }
+    $stmt->execute($params);
     $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
@@ -51,9 +67,85 @@
     ?>
     
     <?php include 'header.php'; ?>
+
+<style>
+    .welcome-section {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    }
+
+    .stat-card.success::before {
+        background: linear-gradient(90deg, var(--success-color), #059669);
+    }
+
+    .stat-card.danger::before {
+        background: linear-gradient(90deg, var(--danger-color), #dc2626);
+    }
+
+    .stat-card.primary::before {
+        background: linear-gradient(90deg, var(--primary-color), #1d4ed8);
+    }
+
+    .transaction-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(37, 99, 235, 0.05);
+        transform: scale(1.01);
+        transition: all 0.2s ease;
+    }
+
+    .search-form {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
+<div class="welcome-section fade-in-up">
+    <h1 class="display-4 fw-bold text-primary mb-3">Bienvenue dans votre Gestionnaire de Finances</h1>
+    <p class="lead text-secondary">Suivez vos revenus, dépenses et solde en temps réel.</p>
+</div>
 <div class="row mb-4">
     <div class="col-md-4">
-        <div class="card border-start border-success border-4 shadow-sm">
+        <div class="card border-start border-success border-4 shadow-sm stat-card success fade-in-up">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -67,7 +159,7 @@
     </div>
 
     <div class="col-md-4">
-        <div class="card border-start border-danger border-4 shadow-sm">
+        <div class="card border-start border-danger border-4 shadow-sm stat-card danger fade-in-up">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -81,7 +173,7 @@
     </div>
 
     <div class="col-md-4">
-        <div class="card border-start border-primary border-4 shadow-sm bg-primary text-white">
+        <div class="card border-start border-primary border-4 shadow-sm bg-primary text-white stat-card primary fade-in-up">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -96,11 +188,47 @@
 </div>
 
 
+<!-- La liste des transactions -->
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Liste des Transactions</h2>
-<a href="addT.php" class="btn btn-success" title="Ajouter"><i class="fa-solid fa-plus"></i> Ajouter</a>
+    <a href="addT.php" class="btn btn-success" title="Ajouter"><i class="fa-solid fa-plus"></i> Ajouter</a>
 </div>
-<div class="card shadow-sm">
+
+<!-- pour la recherche et le filtrage par date -->
+<div class="card shadow mb-1 border-0 search-form fade-in-up">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Rechercher</label>
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Titre, description, categorie ..." 
+                           value="<?= htmlspecialchars($search) ?>">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Du</label>
+                <input type="date" name="date_debut" class="form-control" 
+                       value="<?= htmlspecialchars($date_debut) ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Au</label>
+                <input type="date" name="date_fin" class="form-control" 
+                       value="<?= htmlspecialchars($date_fin) ?>">
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-dark w-100">Filtrer</button>
+            </div>
+            <div class="col-md-1">
+                <a href="index.php" class="btn btn-light border w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- La liste -->
+<div class="card shadow-sm transaction-table fade-in-up">
   <div class="card-body">
         <table class="table table-hover">
         <thead class="table-light">
@@ -163,7 +291,9 @@
     </table>
 </div>
 </div>
-<div class="row">
+
+<!-- Pour les graphiques -->
+<div class="row mb-4 mt-4">
     <div class="col-md-6">
         <div class="card shadow mb-4">
             <div class="card-header bg-danger text-white fw-bold">Répartition des Dépenses</div>
@@ -182,6 +312,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Graphique des Dépenses
