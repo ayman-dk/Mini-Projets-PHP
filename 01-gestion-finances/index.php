@@ -7,6 +7,7 @@
     }
 
     require 'db.php';
+    require 'security.php';
     $current_user_id = $_SESSION['user_id'];
     $search = $_GET['search'] ?? '';
     $use_date_filter = empty($search);
@@ -343,7 +344,28 @@
 // Fonction de confirmation de suppression personnalisée
 function confirmDelete(id, description) {
     document.getElementById('transactionDescription').textContent = '"' + description + '"';
-    document.getElementById('confirmDeleteBtn').href = 'deleteT.php?id=' + id;
+    document.getElementById('confirmDeleteBtn').onclick = function() {
+        // Créer et soumettre un formulaire POST
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'deleteT.php';
+        
+        // Ajouter les champs cachés
+        const idField = document.createElement('input');
+        idField.type = 'hidden';
+        idField.name = 'id';
+        idField.value = id;
+        form.appendChild(idField);
+        
+        const csrfField = document.createElement('input');
+        csrfField.type = 'hidden';
+        csrfField.name = 'csrf_token';
+        csrfField.value = '<?= generateCSRFToken() ?>';
+        form.appendChild(csrfField);
+        
+        document.body.appendChild(form);
+        form.submit();
+    };
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 </script>
