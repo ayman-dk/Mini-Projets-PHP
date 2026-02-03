@@ -93,7 +93,16 @@
                         <label class="form-label fw-bold">Catégorie</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
-                            <input type="text" name="category" class="form-control" value="<?= htmlspecialchars($transaction['categorie']) ?>" placeholder="Ex: Alimentation, Transport...">
+                            <input type="text" name="category" class="form-control" list="categorySuggestions" value="<?= htmlspecialchars($transaction['categorie']) ?>" placeholder="Ex: Alimentation, Transport...">
+                            <datalist id="categorySuggestions">
+                                <option value="Alimentation">
+                                <option value="Loyer">
+                                <option value="Transport">
+                                <option value="Loisirs">
+                                <option value="Santé">
+                                <option value="Salaire">
+                                <option value="Sport">
+                            </datalist>
                         </div>
                     </div>
 

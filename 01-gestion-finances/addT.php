@@ -76,8 +76,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label class="form-label fw-bold">Catégorie</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
-                            <input type="text" name="category" class="form-control" placeholder="Ex: Alimentation, Transport...">
+                          <span class="input-group-text"><i class="fa-solid fa-tag"></i></span>
+                          <input type="text" name="category" class="form-control" list="categorySuggestions" placeholder="Ex: Alimentation...">
+                            <datalist id="categorySuggestions">
+                                <option value="Alimentation">
+                                <option value="Loyer">
+                                <option value="Transport">
+                                <option value="Loisirs">
+                                <option value="Santé">
+                                <option value="Salaire">
+                                <option value="Sport">
+                            </datalist>
                         </div>
                     </div>
 

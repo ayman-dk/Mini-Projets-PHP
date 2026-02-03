@@ -26,6 +26,30 @@
         }}
         $solde = $totalRevenus - $totalDepenses;
         ?>
+        <?php 
+        $dataDepenses = [];
+        $dataRevenus = [];
+
+        foreach ($transactions as $t) {
+             $cat = !empty($t['categorie']) ? ucfirst(strtolower(trim($t['categorie']))) : 'Autre';
+    
+            if ($t['type_transaction'] === 'depense') {
+                if (!isset($dataDepenses[$cat])) $dataDepenses[$cat] = 0;
+                $dataDepenses[$cat] += $t['montant'];
+            } else {
+                    if (!isset($dataRevenus[$cat])) $dataRevenus[$cat] = 0;
+                    $dataRevenus[$cat] += $t['montant'];
+                }
+        }
+        //pour le graphique des Dépenses
+        $labelsDepenses = array_keys($dataDepenses);
+        $valuesDepenses = array_values($dataDepenses);
+
+        //pour le graphique des Revenus
+        $labelsRevenus = array_keys($dataRevenus);
+        $valuesRevenus = array_values($dataRevenus);
+    ?>
+    
     <?php include 'header.php'; ?>
 <div class="row mb-4">
     <div class="col-md-4">
@@ -139,4 +163,51 @@
     </table>
 </div>
 </div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-danger text-white fw-bold">Répartition des Dépenses</div>
+            <div class="card-body">
+                <canvas id="chartDepenses" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white fw-bold">Origine des Revenus</div>
+            <div class="card-body">
+                <canvas id="chartRevenus" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Graphique des Dépenses
+new Chart(document.getElementById('chartDepenses'), {
+    type: 'doughnut',
+    data: {
+        labels: <?= json_encode($labelsDepenses) ?>,
+        datasets: [{
+            data: <?= json_encode($valuesDepenses) ?>,
+            backgroundColor: ['#FF6384', '#FF9F40', '#FFCE56', '#4BC0C0', '#9966FF']
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+
+// Graphique des Revenus
+new Chart(document.getElementById('chartRevenus'), {
+    type: 'doughnut',
+    data: {
+        labels: <?= json_encode($labelsRevenus) ?>,
+        datasets: [{
+            data: <?= json_encode($valuesRevenus) ?>,
+            backgroundColor: ['#2ECC71', '#27AE60', '#16A085', '#A2D9CE', '#D4EFDF']
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+</script>
 <?php include 'footer.php'; ?>
