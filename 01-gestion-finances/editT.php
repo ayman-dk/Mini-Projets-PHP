@@ -1,18 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
     <?php 
+    session_start();
     require 'db.php';
-    $sql = "SELECT * FROM transactions WHERE id = :id";
+
+     if (!isset($_SESSION['user_id'])) {
+         header("Location: login.php");
+         exit();
+     }
+
+    $user_id = $_SESSION['user_id'];
+    $id = $_GET['id'] ?? null;
+
+    $sql = "SELECT * FROM transactions WHERE id = :id and user_id = :uid";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $_GET['id']]);
+    $stmt->execute([':id' => $id, ':uid' => $user_id]);
     $transaction = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$transaction) {
+    die("Action non autorisée ou transaction introuvable.");
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $id = $_POST['id'];
+    $title = $_POST['title'];
+    $amount = $_POST['amount'];
+    $description = $_POST['description'];
+    $category = $_POST['category'];
+    $dateO = $_POST['dateO'];
+    $trans = $_POST['trans']; 
+
+    try {
+        $sql = "UPDATE transactions 
+                SET titre = :t, montant = :m, description = :d, categorie = :c, date_operation = :do, type_transaction = :tt 
+                WHERE id = :id AND user_id = :uid";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+            ':uid' => $user_id,
+            ':t'  => $title,
+            ':m'  => $amount,
+            ':d'  => $description,
+            ':c'  => $category,
+            ':do' => $dateO,
+            ':tt' => $trans
+        ]);
+
+        header("Location: index.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
+    }
+    }
     ?>
+
     <?php include 'header.php'; ?>
 
 <div class="row justify-content-center">
@@ -23,6 +64,7 @@
             </div>
             <div class="card-body">
                 <form action="" method="POST">
+                    <input type="hidden" name="id" value="<?= $transaction['id'] ?>">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titre *</label>
                         <div class="input-group">
@@ -83,41 +125,3 @@
 </div>
 
 <?php include 'footer.php'; ?>
-
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once 'db.php';
-
-    $id = $_POST['id'];
-    $title = $_POST['title'];
-    $amount = $_POST['amount'];
-    $description = $_POST['description'];
-    $category = $_POST['category'];
-    $dateO = $_POST['dateO'];
-    $trans = $_POST['trans']; 
-
-    try {
-        $sql = "UPDATE transactions 
-                SET titre = :t, montant = :m, description = :d, categorie = :c, date_operation = :do, type_transaction = :tt 
-                WHERE id = :id";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':id' => $id,
-            ':t'  => $title,
-            ':m'  => $amount,
-            ':d'  => $description,
-            ':c'  => $category,
-            ':do' => $dateO,
-            ':tt' => $trans
-        ]);
-
-        header("Location: index.php");
-        exit();
-    } catch (PDOException $e) {
-        echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
-    }
-    }
-    ?>
-</body>
-</html>

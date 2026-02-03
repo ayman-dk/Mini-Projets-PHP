@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
     <?php 
+
+    session_start();
+     if (!isset($_SESSION['user_id'])) {
+       header("Location: login.php");
+    exit();
+    }
+
     require 'db.php';
-    $sql = "SELECT * FROM transactions ORDER BY date_operation DESC";
-    $stmt = $pdo->query($sql);
+    $current_user_id = $_SESSION['user_id'];
+
+    $sql = "SELECT * FROM transactions WHERE user_id = :uid ORDER BY date_operation DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':uid' => $current_user_id]);
     $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
@@ -25,7 +27,6 @@
         $solde = $totalRevenus - $totalDepenses;
         ?>
     <?php include 'header.php'; ?>
-
 <div class="row mb-4">
     <div class="col-md-4">
         <div class="card border-start border-success border-4 shadow-sm">
@@ -99,7 +100,8 @@
             <?= number_format($trans['montant'], 2, ',', ' ') ?> DH
         </td>
         
-        <td class="text-muted small"><?= htmlspecialchars($trans['description']) ?></td>
+        <td class="text-muted small"><?= !empty($trans['description']) ? htmlspecialchars($trans['description']) : '<i class="text-muted">Aucune description</i>' ?>
+        </td>
         
         <td>
             <span class="badge rounded-pill bg-secondary text-light">
@@ -138,5 +140,3 @@
 </div>
 </div>
 <?php include 'footer.php'; ?>
-</body>
-</html>

@@ -1,12 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <?php include 'header.php'; ?>
+ <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once 'db.php';
+
+    $title = $_POST['title'];
+    $amount = $_POST['amount'];
+    $description = $_POST['description'];
+    $category = $_POST['category'];
+    $dateO = $_POST['dateO'];
+    $trans = $_POST['trans']; 
+    $user_id = $_SESSION['user_id'];
+
+    try {
+        $sql = "INSERT INTO transactions (titre, montant, description, categorie, date_operation, type_transaction, user_id) 
+                VALUES (:t, :m, :d, :c, :do, :tt, :uid)";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':t'    => $title,
+            ':m'    => $amount,
+            ':d'    => $description,
+            ':c'    => $category,
+            ':do'   => $dateO,
+            ':tt'   => $trans,
+            ':uid'  => $user_id
+        ]);
+
+        header("Location: index.php");
+        exit();
+    } catch (PDOException $e) {
+        $error = "Erreur : " . $e->getMessage();
+    }
+}
+?>
+<?php include 'header.php'; ?>
 
 <div class="row justify-content-center">
     <div class="col-md-6">
@@ -49,7 +82,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Date d'opération</label>
+                        <label class="form-label fw-bold">Date d'opération *</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
                             <input type="date" name="dateO" class="form-control" required>
@@ -76,37 +109,3 @@
 </div>
 
 <?php include 'footer.php'; ?>
-
-    <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once 'db.php';
-
-    $title = $_POST['title'];
-    $amount = $_POST['amount'];
-    $description = $_POST['description'];
-    $category = $_POST['category'];
-    $dateO = $_POST['dateO'];
-    $trans = $_POST['trans']; 
-
-    try {
-        $sql = "INSERT INTO transactions (titre, montant, description, categorie, date_operation, type_transaction) 
-                VALUES (:t, :m, :d, :c, :do, :tt)";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':t'  => $title,
-            ':m'  => $amount,
-            ':d'  => $description,
-            ':c'  => $category,
-            ':do' => $dateO,
-            ':tt' => $trans
-        ]);
-
-        header("Location: index.php");
-    } catch (PDOException $e) {
-        echo "<p style='color: red;'>Erreur : " . $e->getMessage() . "</p>";
-    }
-}
-?>
-</body>
-</html>
