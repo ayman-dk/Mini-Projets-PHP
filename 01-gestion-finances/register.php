@@ -8,21 +8,34 @@
 <body>
     
 <?php
+session_start();
    require 'db.php';
    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user = $_POST['username'];
-    $email = $_POST['email'];
-    $passw = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $user = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $passw = $_POST['password'];
+    $confirmPassw = $_POST['confirm_password'];
 
-    if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    // Validation du mot de passe
+    if (strlen($passw) < 8) {
+        $error = "Le mot de passe doit contenir au moins 8 caractères.";
+    } elseif (!preg_match('/[A-Z]/', $passw)) {
+        $error = "Le mot de passe doit contenir au moins une lettre majuscule.";
+    } elseif (!preg_match('/[a-z]/', $passw)) {
+        $error = "Le mot de passe doit contenir au moins une lettre minuscule.";
+    } elseif (!preg_match('/[0-9]/', $passw)) {
+        $error = "Le mot de passe doit contenir au moins un chiffre.";
+    } elseif ($passw !== $confirmPassw) {
+        $error = "Les mots de passe ne correspondent pas.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Adresse email invalide.";
     } else {
         try {
+            $hashedPass = password_hash($passw, PASSWORD_BCRYPT);
             $sql = "INSERT INTO users (username, email, password) VALUES (:u, :em, :pw)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute(['u' => $user, 'em' => $email, 'pw' => $passw]);
+            $stmt->execute(['u' => $user, 'em' => $email, 'pw' => $hashedPass]);
 
-            session_start();
             $_SESSION['user_id'] = $pdo->lastInsertId(); 
             $_SESSION['username'] = $user;
             header('Location: index.php');
@@ -116,9 +129,74 @@
         100% { transform: scale(1); opacity: 1; }
     }
 
+    .password-strength {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .password-strength .requirement {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .password-strength .requirement i {
+        margin-right: 0.5rem;
+        width: 1rem;
+    }
+
+    .password-strength .valid {
+        color: var(--success-color);
+    }
+
+    .password-strength .invalid {
+        color: var(--danger-color);
+    }
+
     .alert {
-        border-radius: 8px;
+        border-radius: 12px;
         border: none;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    .alert::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--danger-color);
+    }
+
+    .alert-danger::before {
+        background: var(--danger-color);
+    }
+
+    .alert-success::before {
+        background: var(--success-color);
+    }
+
+    .alert-warning::before {
+        background: var(--warning-color);
+    }
+
+    .alert-info::before {
+        background: var(--primary-color);
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 
@@ -169,10 +247,36 @@
                         <label class="form-label fw-bold">Email</label>
                         <input type="email" name="email" class="form-control" placeholder="votre@email.com" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label fw-bold">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Générez un mot de passe fort" required>
+                        <small class="form-text text-muted">
+                            Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule et un chiffre.
+                        </small>
+                        <div class="password-strength" id="password-strength">
+                            <div class="requirement" id="length">
+                                <i class="fa-solid fa-times invalid"></i>
+                                Au moins 8 caractères
+                            </div>
+                            <div class="requirement" id="uppercase">
+                                <i class="fa-solid fa-times invalid"></i>
+                                Une lettre majuscule
+                            </div>
+                            <div class="requirement" id="lowercase">
+                                <i class="fa-solid fa-times invalid"></i>
+                                Une lettre minuscule
+                            </div>
+                            <div class="requirement" id="number">
+                                <i class="fa-solid fa-times invalid"></i>
+                                Un chiffre
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Confirmer le mot de passe</label>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Confirmez votre mot de passe" required>
                     </div>
                     
                     <div class="d-grid gap-2 mt-4">
@@ -189,6 +293,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('password').addEventListener('input', function() {
+    const password = this.value;
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password)
+    };
+
+    Object.keys(requirements).forEach(req => {
+        const element = document.getElementById(req);
+        const icon = element.querySelector('i');
+        if (requirements[req]) {
+            icon.className = 'fa-solid fa-check valid';
+        } else {
+            icon.className = 'fa-solid fa-times invalid';
+        }
+    });
+});
+</script>
 
 <?php include 'footer.php'; ?>
 </body>

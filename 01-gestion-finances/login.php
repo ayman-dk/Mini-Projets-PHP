@@ -113,8 +113,49 @@
     }
 
     .alert {
-        border-radius: 8px;
+        border-radius: 12px;
         border: none;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    .alert::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--danger-color);
+    }
+
+    .alert-danger::before {
+        background: var(--danger-color);
+    }
+
+    .alert-success::before {
+        background: var(--success-color);
+    }
+
+    .alert-warning::before {
+        background: var(--warning-color);
+    }
+
+    .alert-info::before {
+        background: var(--primary-color);
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 

@@ -279,7 +279,7 @@
         
         <a href="deleteT.php?id=<?= $trans['id'] ?>" 
            class="btn btn-sm btn-outline-danger" 
-           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?');"
+           onclick="confirmDelete(<?= $trans['id'] ?>, '<?= htmlspecialchars($trans['description']) ?>'); return false;"
            title="Supprimer">
             <i class="bi bi-trash"></i>
         </a>
@@ -290,6 +290,32 @@
 </tbody>
     </table>
 </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmation de suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Êtes-vous sûr de vouloir supprimer cette transaction ?</p>
+                <p class="text-muted small mb-0" id="transactionDescription"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Annuler
+                </button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Pour les graphiques -->
@@ -312,6 +338,15 @@
         </div>
     </div>
 </div>
+
+<script>
+// Fonction de confirmation de suppression personnalisée
+function confirmDelete(id, description) {
+    document.getElementById('transactionDescription').textContent = '"' + description + '"';
+    document.getElementById('confirmDeleteBtn').href = 'deleteT.php?id=' + id;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

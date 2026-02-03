@@ -198,7 +198,7 @@
                         </span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-danger btn-sm text-white px-3" href="logout.php">
+                        <a class="nav-link btn btn-outline-danger btn-sm text-white px-3" href="#" onclick="confirmLogout(); return false;">
                             <i class="fa-solid fa-power-off"></i> Déconnexion
                         </a>
                     </li>
@@ -215,6 +215,40 @@
     </div>
 </nav>
 
+<!-- Modal de confirmation de déconnexion -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="logoutModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmation de déconnexion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Êtes-vous sûr de vouloir vous déconnecter ?</p>
+                <p class="text-muted small mb-0">Vous serez redirigé vers la page de connexion.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Annuler
+                </button>
+                <a href="logout.php" class="btn btn-warning">
+                    <i class="bi bi-box-arrow-right me-1"></i>Déconnexion
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container pb-5">
 </body>
+
+<script>
+// Fonction de confirmation de déconnexion personnalisée
+function confirmLogout() {
+    new bootstrap.Modal(document.getElementById('logoutModal')).show();
+}
+</script>
+
 </html>
