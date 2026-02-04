@@ -9,4 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $apiKey = bin2hex(random_bytes(32));
 
     $sql = "INSERT INTO users (email, password, api_key) VALUES (:email, :password, :api_key)";
+    $stmt = $pdo->prepare($sql);
+    
+    try {
+        $stmt->execute([$email, $password, $apiKey]);
+        echo "Inscription réussie ! Votre clé API est : " . $apiKey;
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
 }
+?>
