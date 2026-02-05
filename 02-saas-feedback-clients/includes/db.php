@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'saas_feedback_clients';
+$dbname = 'mp_saas_feedback';
 $username = 'root';
 $password = '';
 $charset = 'utf8mb4';
